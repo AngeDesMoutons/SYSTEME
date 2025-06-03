@@ -129,56 +129,73 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Gestion des filtres
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.classList.contains('filter-btn')) {
-            const filter = e.target.getAttribute('data-filter');
-            const filterButtons = document.querySelectorAll('.filter-btn');
+        const filter = e.target.getAttribute('data-filter');
 
-            // Mise à jour des boutons
-            filterButtons.forEach(btn => {
-                btn.classList.remove('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
-                btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        // Mise à jour des boutons
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.classList.remove('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
+            btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        });
+        e.target.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        e.target.classList.add('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
+
+        // Sélection des sections
+        const questSection = document.getElementById('questList').closest('.mt-8');
+        const malusSection = document.getElementById('malusList').closest('.mt-8');
+
+        // Cartes
+        const taskCards = document.querySelectorAll('#taskList .task-card');
+        const questCards = document.querySelectorAll('#questList .quest-card');
+        const malusCards = document.querySelectorAll('#malusList .task-card');
+
+        // Réinitialisation
+        taskCards.forEach(card => card.classList.remove('hidden'));
+        questCards.forEach(card => card.classList.remove('hidden'));
+        malusCards.forEach(card => card.classList.remove('hidden'));
+        questSection.classList.remove('hidden');
+        malusSection.classList.remove('hidden');
+
+        // Application des filtres
+        switch (filter) {
+            case 'daily':
+            taskCards.forEach(card => {
+                if (card.getAttribute('data-category') !== 'daily') card.classList.add('hidden');
             });
-            e.target.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-            e.target.classList.add('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
-
-            // Affichage/Masquage des sections
-            const taskSection = document.getElementById('taskList').parentElement;
-            const questSection = document.getElementById('questList').parentElement.parentElement;
-            const malusSection = document.getElementById('malusList').parentElement.parentElement;
-
-            // Par défaut, tout masquer
-            taskSection.classList.add('hidden');
             questSection.classList.add('hidden');
             malusSection.classList.add('hidden');
-
-            // Afficher la bonne section selon le filtre
-            if (filter === 'all' || filter === 'daily' || filter === 'weekly' || filter === 'completed') {
-                taskSection.classList.remove('hidden');
-            }
-            if (filter === 'quest') {
-                questSection.classList.remove('hidden');
-            }
-            if (filter === 'malus') {
-                malusSection.classList.remove('hidden');
-            }
-
-            // Filtrage des cartes
-            const allCards = document.querySelectorAll('.task-card, .quest-card');
-            allCards.forEach(card => {
-                card.classList.add('hidden');
-                if (filter === 'all') {
-                    card.classList.remove('hidden');
-                } else if (filter === 'completed' && card.classList.contains('completed')) {
-                    card.classList.remove('hidden');
-                } else if (filter === 'daily' && card.getAttribute('data-category') === 'daily') {
-                    card.classList.remove('hidden');
-                } else if (filter === 'weekly' && card.getAttribute('data-category') === 'weekly') {
-                    card.classList.remove('hidden');
-                } else if (filter === 'quest' && card.getAttribute('data-category') === 'quest') {
-                    card.classList.remove('hidden');
-                }
+            break;
+            case 'weekly':
+            taskCards.forEach(card => {
+                if (card.getAttribute('data-category') !== 'weekly') card.classList.add('hidden');
             });
+            questSection.classList.add('hidden');
+            malusSection.classList.add('hidden');
+            break;
+            case 'quest':
+            taskCards.forEach(card => card.classList.add('hidden'));
+            malusSection.classList.add('hidden');
+            break;
+            case 'completed':
+            taskCards.forEach(card => {
+                if (!card.classList.contains('completed')) card.classList.add('hidden');
+            });
+            questCards.forEach(card => {
+                if (!card.classList.contains('completed')) card.classList.add('hidden');
+            });
+            malusSection.classList.add('hidden');
+            break;
+            case 'malus':
+            taskCards.forEach(card => card.classList.add('hidden'));
+            questSection.classList.add('hidden');
+            break;
+            case 'all':
+            default:
+            // tout visible
+            break;
+        }
         }
     });
     
