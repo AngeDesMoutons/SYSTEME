@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadAllData() {
         try {
-            const res = await fetch('/data.php', { cache: "no-store" });
+            const res = await fetch('/SYSTEME/data.php', { cache: "no-store" });
             if (res.ok) {
                 const data = await res.json();
                 xp = data.xp || 0;
@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function saveAllData() {
-        await fetch('/data.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
-        });
+        await fetch('/SYSTEME/data.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
+    });
     }
 
     // Simuler un chargement
