@@ -63,6 +63,21 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Mot de passe incorrect.');
         }
     });
+
+    
+    // Rafraîchir l'app sans repasser par le mot de passe, avec animation
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        const svg = this.querySelector('svg');
+        svg.classList.add('spin');
+        // Recharge les données et réaffiche tout
+        if (typeof initializeData === 'function') {
+            initializeData();
+            addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
+        }
+        setTimeout(() => {
+            svg.classList.remove('spin');
+        }, 700);
+    });
     
     // Gestion du thème
     document.getElementById('themeToggle').addEventListener('click', function() {
@@ -423,18 +438,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fonction pour initialiser les données
     async function initializeData() {
-        await loadAllData();
-        checkMissedTasks();
-        renderTasks();
-        renderQuests();
-        renderMalus();
+    // Réinitialise les notifications à chaque connexion
+    document.getElementById('notificationsList').innerHTML = '';
+    notifications = 0;
+    updateNotificationCount();
 
-        const percentage = Math.min(100, Math.floor((xp / maxXp) * 100));
-        document.querySelector('.xp-bar').style.width = `${percentage}%`;
-        document.querySelector('.text-sm.font-medium.text-indigo-700, .text-sm.font-medium.text-indigo-300').textContent = `Progression: ${xp} XP / ${maxXp} XP`;
-        document.querySelectorAll('.text-sm.font-medium.text-indigo-700 + span, .text-sm.font-medium.text-indigo-300 + span')[0].textContent = `${percentage}%`;
-        document.querySelector('.level-badge').textContent = `Niveau ${level}`;
-    }
+    await loadAllData();
+    checkMissedTasks();
+    renderTasks();
+    renderQuests();
+    renderMalus();
+
+    const percentage = Math.min(100, Math.floor((xp / maxXp) * 100));
+    document.querySelector('.xp-bar').style.width = `${percentage}%`;
+    document.querySelector('.text-sm.font-medium.text-indigo-700, .text-sm.font-medium.text-indigo-300').textContent = `Progression: ${xp} XP / ${maxXp} XP`;
+    document.querySelectorAll('.text-sm.font-medium.text-indigo-700 + span, .text-sm.font-medium.text-indigo-300 + span')[0].textContent = `${percentage}%`;
+    document.querySelector('.level-badge').textContent = `Niveau ${level}`;
+}
     
     // Fonction pour rendre les tâches
     function renderTasks() {
