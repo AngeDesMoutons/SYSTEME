@@ -220,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('taskXp').value = '10';
         document.getElementById('taskCategory').value = 'daily';
         document.getElementById('taskRepeat').value = '1';
-        document.getElementById('taskDeadline').value = '23:59';
         
         taskModal.classList.remove('hidden');
         document.getElementById('taskName').focus();
@@ -246,7 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const xpValue = parseInt(document.getElementById('taskXp').value);
         const category = document.getElementById('taskCategory').value;
         const repeat = parseInt(document.getElementById('taskRepeat').value);
-        const deadline = document.getElementById('taskDeadline').value;
         
         const task = {
             id,
@@ -255,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
             category,
             repeat: category === 'weekly' ? repeat : 1,
             progress: 0,
-            deadline,
             completed: false,
             lastChecked: new Date().toISOString().split('T')[0]
         };
@@ -455,18 +452,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressText = `Progression: ${task.progress}/${task.repeat}`;
             }
             
-            let deadlineText = '';
-            if (task.deadline) {
-                deadlineText = `• Échéance: ${task.deadline}`;
-            }
-            
             taskCard.innerHTML = `
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-semibold text-gray-800 dark:text-white">${task.name}</h3>
                     <span class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2 py-1 rounded">+${task.xp} XP</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">${task.category === 'daily' ? 'Quotidien' : 'Hebdomadaire'} ${progressText ? '• ' + progressText : ''} ${deadlineText}</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">${task.category === 'daily' ? 'Quotidien' : 'Hebdomadaire'} ${progressText ? '• ' + progressText : ''}</span>
                     <div class="flex space-x-2">
                         ${task.completed ? 
                             `<button class="complete-btn bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 px-3 py-1 rounded-md text-sm">Complété</button>` : 
@@ -653,7 +645,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('taskXp').value = task.xp;
                 document.getElementById('taskCategory').value = task.category;
                 document.getElementById('taskRepeat').value = task.repeat;
-                document.getElementById('taskDeadline').value = task.deadline;
                 
                 if (task.category === 'weekly') {
                     document.getElementById('repeatContainer').classList.remove('hidden');
@@ -806,53 +797,46 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date();
         const currentDate = today.toISOString().split('T')[0];
         const dayOfWeek = today.getDay(); // 0 = dimanche, 1 = lundi, etc.
-        
+
         tasks.forEach(task => {
-            // Vérifier si la tâche n'est pas complétée et si la date a changé
-            if (!task.completed && task.lastChecked !== currentDate) {
-                // Pour les tâches quotidiennes
-                if (task.category === 'daily') {
-                    // Appliquer le malus
+            // Réinitialisation quotidienne pour les tâches quotidiennes
+            if (task.category === 'daily' && task.lastChecked !== currentDate) {
+                if (!task.completed) {
+                    // Appliquer le malus si non complétée
                     addXp(-task.xp);
-                    
-                    // Ajouter une notification
                     addNotification(`Tâche quotidienne manquée: ${task.name}`, `Malus appliqué: -${task.xp} XP`);
-                    
-                    // Réinitialiser pour le jour suivant
-                    task.lastChecked = currentDate;
                 }
-                // Pour les tâches hebdomadaires, vérifier si c'est dimanche
-                else if (task.category === 'weekly' && dayOfWeek === 0) {
-                    // Calculer le malus en fonction de la progression
+                // Réinitialiser la tâche pour le nouveau jour
+                task.completed = false;
+                task.lastChecked = currentDate;
+            }
+
+            // Réinitialisation hebdomadaire pour les tâches hebdomadaires (le dimanche)
+            if (task.category === 'weekly' && dayOfWeek === 0 && task.lastChecked !== currentDate) {
+                if (task.progress < task.repeat) {
                     const missedProgress = task.repeat - task.progress;
                     if (missedProgress > 0) {
                         const malusXp = -Math.floor((task.xp / task.repeat) * missedProgress);
-                        
-                        // Appliquer le malus
                         addXp(malusXp);
-                        
-                        // Ajouter une notification
                         addNotification(`Tâche hebdomadaire incomplète: ${task.name}`, `Malus appliqué: ${malusXp} XP (${task.progress}/${task.repeat} complété)`);
                     }
-                    
-                    // Réinitialiser pour la semaine suivante
-                    task.progress = 0;
-                    task.completed = false;
-                    task.lastChecked = currentDate;
                 }
+                // Réinitialiser la tâche pour la nouvelle semaine
+                task.progress = 0;
+                task.completed = false;
+                task.lastChecked = currentDate;
             }
         });
-        
+
         // Vérifier les quêtes expirées
         quests.forEach(quest => {
             if (!quest.completed && quest.deadline && quest.deadline < currentDate) {
-                // Ajouter une notification
                 addNotification(`Quête expirée: ${quest.name}`, `La date limite est passée: ${formatDate(quest.deadline)}`);
             }
         });
-        
+
         // Sauvegarder les changements
-        saveAllData();;
+        saveAllData();
     }
     
     // Fonction pour formater les dates
@@ -867,29 +851,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Vérifier les échéances toutes les minutes
-    setInterval(() => {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTime = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-        
-        tasks.forEach(task => {
-            if (task.deadline && !task.completed && task.deadline <= currentTime) {
-                // Vérifier si la tâche n'a pas déjà été vérifiée aujourd'hui
-                const currentDate = now.toISOString().split('T')[0];
-                if (task.lastChecked !== currentDate) {
-                    // Appliquer le malus
-                    addXp(-task.xp);
-                    
-                    // Ajouter une notification
-                    addNotification(`Échéance dépassée: ${task.name}`, `Malus appliqué: -${task.xp} XP`);
-                    
-                    // Marquer comme vérifié pour aujourd'hui
-                    task.lastChecked = currentDate;
-                    saveAllData();;
-                }
-            }
-        });
-    }, 60000); // Vérifier chaque minute
 });
