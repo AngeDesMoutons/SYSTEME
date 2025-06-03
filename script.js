@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let quests = [];
     let malus = [];
     let currentTheme = 'light';
+    fetch('/SYSTEME/data.php', { cache: "no-store" });
 
     async function loadAllData() {
         try {

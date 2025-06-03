@@ -1,5 +1,4 @@
 <?php
-<?php
 header('Content-Type: application/json');
 $dataFile = 'data.json';
 
