@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let quests = [];
     let malus = [];
     let currentTheme = 'light';
-    fetch('/SYSTEME/data.php', { cache: "no-store" });
+    fetch('data.php', { cache: "no-store" });
 
     async function loadAllData() {
         try {
-            const res = await fetch('/SYSTEME/data.php', { cache: "no-store" });
+            const res = await fetch('data.php', { cache: "no-store" });
             if (res.ok) {
                 const data = await res.json();
                 xp = data.xp || 0;
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function saveAllData() {
-        await fetch('/SYSTEME/data.php', {
+        await fetch('data.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
@@ -42,16 +42,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
     
     // Gestion du mot de passe
-    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+    document.getElementById('passwordForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const password = document.getElementById('password').value;
-        
-        if (password === 'Angelo8002!') {
+
+        // Vérification côté serveur
+        const res = await fetch('check_password.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
             document.getElementById('passwordScreen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('app').classList.add('fade-in');
-            
-            // Initialiser les données
             initializeData();
         } else {
             alert('Mot de passe incorrect.');
