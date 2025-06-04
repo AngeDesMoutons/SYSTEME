@@ -1,23 +1,100 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 html {
     scrollbar-gutter: stable;
     transition: padding-right 0.3s;
 }
+
 body {
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
     font-family: 'Poppins', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
-.task-card {
-    transition: all 0.3s ease;
+body::-webkit-scrollbar {
+    width: 0 !important;
+    background: transparent;
 }
-.task-card:hover {
-    transform: translateY(-2px);
+
+/* Task & Quest Cards */
+.task-card,
+.quest-card {
+    opacity: 1;
+    transition: opacity 0.3s;
 }
+.completed {
+    opacity: 0.6;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeInCustom 0.5s ease-in-out;
+}
+@keyframes fadeInCustom {
+    from { opacity: 0; }
+    to { opacity: inherit; }
+}
+.completed.fade-in {
+    animation: fadeInCompleted 0.5s ease-in-out;
+}
+@keyframes fadeInCompleted {
+    from { opacity: 0; }
+    to { opacity: 0.6; }
+}
+.fade-out {
+    animation: fadeOutCustom 0.4s forwards;
+}
+@keyframes fadeOutCustom {
+    from { opacity: inherit; }
+    to { opacity: 0; }
+}
+.completed.fade-out {
+    animation: fadeOutCompleted 0.4s forwards;
+}
+@keyframes fadeOutCompleted {
+    from { opacity: 0.6; }
+    to { opacity: 0; }
+}
+.slide-in { animation: slideIn 0.3s ease-out; }
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.slide-out {
+    animation: slideOut 0.4s forwards;
+}
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-20px); opacity: 0; }
+}
+
+/* Scrollbar fade-out/fade-in progressif */
+.scrollbar-fade,
+.scrollbar-fade * {
+    scrollbar-color: rgba(0,0,0,0) rgba(0,0,0,0) !important;
+    transition: scrollbar-color 0.4s, opacity 0.4s;
+}
+.scrollbar-fade::-webkit-scrollbar,
+.scrollbar-fade *::-webkit-scrollbar {
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+.hide-scrollbar {
+    overflow-x: hidden !important;
+    scrollbar-width: none !important;
+}
+.hide-scrollbar::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* XP Bar */
 .xp-bar {
     height: 12px;
     border-radius: 6px;
     transition: width 0.5s ease-in-out;
 }
+
+/* Notification pulse */
 .notification {
     animation: pulse 2s infinite;
 }
@@ -26,24 +103,19 @@ body {
     70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
     100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
 }
-.completed { opacity: 0.6; }
-.fade-in { animation: fadeIn 0.5s ease-in-out; }
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-.slide-in { animation: slideIn 0.3s ease-out; }
-@keyframes slideIn {
-    from { transform: translateY(-20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-.modal { backdrop-filter: blur(5px); }
+
+/* Quest card background */
 .quest-card {
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
 }
 .dark .quest-card {
     background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
 }
+
+/* Modal blur */
+.modal { backdrop-filter: blur(5px); }
+
+/* Refresh spin */
 @keyframes spin {
     100% { transform: rotate(720deg); }
 }
@@ -53,19 +125,4 @@ body {
 }
 #refreshBtn .spin {
     animation: spin 1.3s linear;
-}
-.fade-out {
-    animation: fadeOut 0.4s forwards;
-}
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-.slide-out {
-    animation: slideOut 0.4s forwards;
-}
-@keyframes slideOut {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(-20px); opacity: 0; }
 }

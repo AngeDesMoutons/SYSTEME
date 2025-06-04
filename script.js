@@ -67,11 +67,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function hideWithAnimation(element, animation = 'fade-out', duration = 400) {
+        document.body.classList.add('scrollbar-fade');
         element.classList.remove('fade-in', 'slide-in');
         element.classList.add(animation);
         setTimeout(() => {
             element.classList.add('hidden');
             element.classList.remove(animation);
+            document.body.classList.remove('scrollbar-fade');
         }, duration);
     }
     
@@ -186,6 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const questCards = document.querySelectorAll('#questList .quest-card');
         const malusCards = document.querySelectorAll('#malusList .task-card');
 
+        const filtersContainer = document.getElementById('filtersContainer');
+        filtersContainer.classList.add('scrollbar-fade');
+        document.body.classList.add('scrollbar-fade');
+        setTimeout(() => {
+            filtersContainer.classList.remove('scrollbar-fade');
+            document.body.classList.remove('scrollbar-fade');
+        }, 100);
         // Application des filtres
         switch (filter) {
             case 'daily':
@@ -255,8 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showWithAnimation(malusSection);
                 break;
         }
-        }
-    });
+    }});
     
     // Gestion du modal de tâche
     const taskModal = document.getElementById('taskModal');
