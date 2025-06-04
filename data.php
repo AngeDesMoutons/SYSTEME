@@ -1,6 +1,19 @@
 <?php
 header('Content-Type: application/json');
 $dataFile = 'data.json';
+$sessionFile = 'session.json';
+
+// Vérifie la session
+$headers = getallheaders();
+$clientSessionId = $headers['X-Session-Id'] ?? '';
+$sessionData = json_decode(@file_get_contents($sessionFile), true);
+$activeSessionId = $sessionData['sessionId'] ?? '';
+
+if ($activeSessionId && $clientSessionId !== $activeSessionId) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Session invalide']);
+    exit;
+}
 
 // Valeurs par défaut si le fichier n'existe pas
 $defaultData = [

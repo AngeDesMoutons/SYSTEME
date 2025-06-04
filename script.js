@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
+    let sessionId = null;
     let xp = 0;
     let maxXp = 100;
     let level = 0;
@@ -12,7 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadAllData() {
         try {
-            const res = await fetch('data.php', { cache: "no-store" });
+            const res = await fetch('data.php', {
+                cache: "no-store",
+                headers: { 'X-Session-Id': sessionId || localStorage.getItem('sessionId') || '' }
+            });
+            if (res.status === 403) {
+                alert("Connexion expirée ou utilisée ailleurs. Veuillez vous reconnecter.");
+                localStorage.removeItem('sessionId');
+                window.location.reload();
+                return;
+            }
             if (res.ok) {
                 const data = await res.json();
                 xp = data.xp || 0;
@@ -28,11 +38,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function saveAllData() {
-        await fetch('data.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
-    });
+        const res = await fetch('data.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Session-Id': sessionId || localStorage.getItem('sessionId') || ''
+            },
+            body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
+        });
+        if (res.status === 403) {
+            alert("Connexion expirée ou utilisée ailleurs. Veuillez vous reconnecter.");
+            localStorage.removeItem('sessionId');
+            window.location.reload();
+            return;
+        }
     }
 
     // Simuler un chargement
@@ -55,6 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = await res.json();
 
         if (data.success) {
+            sessionId = data.sessionId;
+            localStorage.setItem('sessionId', sessionId);
             hideWithAnimation(document.getElementById('passwordScreen'), 'fade-out');
             setTimeout(() => {
                 document.getElementById('app').classList.remove('hidden');
@@ -708,6 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400');
                     card.classList.add('completed');
                     saveAllData();;
+                    renderTasks();
                 }
             });
         });
@@ -738,6 +760,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.classList.remove('bg-indigo-100', 'hover:bg-indigo-200', 'dark:bg-indigo-900/30', 'dark:hover:bg-indigo-800/40', 'text-indigo-700', 'dark:text-indigo-300');
                         this.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400');
                         card.classList.add('completed');
+                        saveAllData();;
+                        renderTasks();
                     }
                     
                     saveAllData();;
