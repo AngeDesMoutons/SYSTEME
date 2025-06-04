@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+html {
+    scrollbar-gutter: stable;
+    transition: padding-right 0.3s;
+}
 body {
     font-family: 'Poppins', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -49,4 +53,19 @@ body {
 }
 #refreshBtn .spin {
     animation: spin 1.3s linear;
+}
+.fade-out {
+    animation: fadeOut 0.4s forwards;
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.slide-out {
+    animation: slideOut 0.4s forwards;
+}
+@keyframes slideOut {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-20px); opacity: 0; }
 }
