@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système Solo Leveling - Progression du Chasseur</title>
+    <title>Système - Progression du Chasseur</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="logo.png">
     <script src="script.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -46,16 +47,16 @@
     </div>
     
     <!-- Main App -->
-    <div id="app" class="hidden">
+    <div id="app" class="hidden fade-in min-h-screen flex justify-center">
         <div class="container mx-auto px-4 py-8 max-w-4xl">
             <header class="mb-8">
                 <div class="flex justify-between items-center">
                     <h1 class="text-3xl font-bold text-indigo-800 dark:text-indigo-400">Interface du Chasseur</h1>
                     <div class="flex items-center space-x-3">
-                        <span class="level-badge bg-gradient-to-r from-indigo-600 to-indigo-400 dark:from-indigo-500 dark:to-indigo-300 text-white font-bold px-3 py-1 rounded-full">Niveau 0</span>
+                        <span class="level-badge bg-gradient-to-r from-indigo-600 to-indigo-400 dark:from-indigo-500 dark:to-indigo-300 text-white font-bold px-3 py-1 rounded-full text-center text-base md:text-lg">Niveau 0</span>
                         
                         <!-- Theme Toggle Button -->
-                        <button id="themeToggle" class="bg-white dark:bg-gray-700 p-2 rounded-full shadow">
+                        <button id="themeToggle" class="bg-white dark:bg-gray-700 p-2 rounded-full shadow hidden sm:block">
                             <svg id="lightIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
@@ -78,7 +79,9 @@
                             </svg>
                             <span id="notificationCount" class="notification absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
                         </button>
-                        <button id="refreshBtn" class="bg-white dark:bg-gray-700 p-2 rounded-full shadow" title="Rafraîchir">
+
+                        <!-- Refresh Button -->
+                        <button id="refreshBtn" class="bg-white dark:bg-gray-700 p-2 rounded-full shadow hidden md:block" title="Rafraîchir">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.581M5.582 9A7 7 0 0112 5a7 7 0 017 7h-1.5m-13 0A7 7 0 0012 19a7 7 0 007-7h-1.5"/>
                             </svg>
@@ -99,7 +102,7 @@
             </header>
             
             <!-- Notifications Panel -->
-            <div id="notificationsPanel" class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6 border-l-4 border-red-500">
+            <div id="notificationsPanel" class="hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6 border-l-4 border-red-500 slide-in">
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="font-bold text-lg text-gray-800 dark:text-white">Journal</h3>
                     <button id="markAllReadBtn" class="text-sm bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition">Tout marquer comme lu</button>
@@ -110,7 +113,7 @@
             </div>
             
             <!-- Filtres -->
-            <div class="flex flex-wrap gap-2 mb-6 overflow-x-auto flex-nowrap">
+            <div class="flex flex-wrap gap-2 mb-3 overflow-x-auto flex-nowrap pb-2">
                 <button class="filter-btn bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Toutes les Quêtes</button>
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="daily">Quêtes Quotidiennes</button>
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="weekly">Quêtes Hebdomadaires</button>

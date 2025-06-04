@@ -157,12 +157,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mise à jour des boutons
         const filterButtons = document.querySelectorAll('.filter-btn');
         filterButtons.forEach(btn => {
-            btn.classList.remove('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
+            btn.classList.remove('bg-indigo-600', 'dark:bg-indigo-500', 'text-white', 'animate-pulse');
             btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
         });
         e.target.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
-        e.target.classList.add('bg-indigo-600', 'dark:bg-indigo-500', 'text-white');
-
+        e.target.classList.add('bg-indigo-600', 'dark:bg-indigo-500', 'text-white', 'animate-pulse');
         // Sélection des sections
         const questSection = document.getElementById('questList').closest('.mt-8');
         const malusSection = document.getElementById('malusList').closest('.mt-8');
@@ -463,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         tasks.forEach(task => {
             const taskCard = document.createElement('div');
-            taskCard.className = `task-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md ${task.completed ? 'completed' : ''}`;
+            taskCard.className = `task-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md ${task.completed ? 'completed' : ''} fade-in`;
             taskCard.setAttribute('data-category', task.category);
             taskCard.setAttribute('data-id', task.id);
             
@@ -514,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         quests.forEach(quest => {
             const questCard = document.createElement('div');
-            questCard.className = `quest-card p-4 rounded-lg shadow-md text-white ${quest.completed ? 'completed opacity-60' : ''}`;
+            questCard.className = `quest-card p-4 rounded-lg shadow-md text-white ${quest.completed ? 'completed opacity-60' : ''} fade-in`;
             questCard.setAttribute('data-category', 'quest');
             questCard.setAttribute('data-id', quest.id);
             
