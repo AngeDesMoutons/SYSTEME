@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let quests = [];
     let malus = [];
     let currentTheme = 'light';
-    fetch('data.php', { cache: "no-store" });
 
     async function loadAllData() {
         try {
@@ -38,6 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     async function saveAllData() {
+        // Ne sauvegarde pas si aucune donnée utile (évite l'écrasement au démarrage)
+        if (
+            (tasks.length === 0 && quests.length === 0 && malus.length === 0) &&
+            xp === 0 && level === 0
+        ) {
+            return;
+        }
         const res = await fetch('data.php', {
             method: 'POST',
             headers: {
@@ -82,13 +88,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('app').classList.add('fade-in');
             }, 400);
             initializeData();
+            window.addEventListener('beforeunload', function() {
+                saveAllData();
+            });
         } else {
             alert('Mot de passe incorrect.');
         }
-    });
-
-    window.addEventListener('beforeunload', function() {
-        saveAllData();
     });
 
     function hideWithAnimation(element, animation = 'fade-out', duration = 400) {
@@ -108,12 +113,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Sauvegarde avant de recharger les données
         saveAllData().then(() => {
             if (typeof initializeData === 'function') {
-                initializeData();
-                addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
+                initializeData().then(() => {
+                    addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
+                    setTimeout(() => {
+                        svg.classList.remove('spin');
+                    }, 700);
+                });
             }
-            setTimeout(() => {
-                svg.classList.remove('spin');
-            }, 700);
         });
     });
     
@@ -510,12 +516,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fonction pour initialiser les données
     async function initializeData() {
+    await loadAllData();
     // Réinitialise les notifications à chaque connexion
     document.getElementById('notificationsList').innerHTML = '';
     notifications = 0;
     updateNotificationCount();
 
-    await loadAllData();
     checkMissedTasks();
     renderTasks();
     renderQuests();
