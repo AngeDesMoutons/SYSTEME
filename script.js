@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
         svg.classList.add('spin');
         // Recharge les données et réaffiche tout
         if (typeof initializeData === 'function') {
+            saveAllData()
             initializeData();
             addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
         }
