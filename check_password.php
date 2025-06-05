@@ -4,6 +4,11 @@ $data = json_decode(file_get_contents('php://input'), true);
 $password = $data['password'] ?? '';
 $sessionFile = 'session.json';
 
+// Création automatique du fichier session.json s'il n'existe pas
+if (!file_exists($sessionFile)) {
+    file_put_contents($sessionFile, json_encode([]));
+}
+
 if ($password === 'Angelo8002!') {
     // Génère un nouvel identifiant de session
     $sessionId = uniqid('sess_', true);
