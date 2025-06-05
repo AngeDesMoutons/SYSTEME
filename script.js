@@ -87,6 +87,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    window.addEventListener('beforeunload', function() {
+        saveAllData();
+    });
+
     function hideWithAnimation(element, animation = 'fade-out', duration = 400) {
         document.body.classList.add('scrollbar-fade');
         element.classList.remove('fade-in', 'slide-in');
@@ -98,19 +102,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }, duration);
     }
     
-    // Rafraîchir l'app sans repasser par le mot de passe, avec animation
     document.getElementById('refreshBtn').addEventListener('click', function() {
         const svg = this.querySelector('svg');
         svg.classList.add('spin');
-        // Recharge les données et réaffiche tout
-        if (typeof initializeData === 'function') {
-            saveAllData()
-            initializeData();
-            addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
-        }
-        setTimeout(() => {
-            svg.classList.remove('spin');
-        }, 700);
+        // Sauvegarde avant de recharger les données
+        saveAllData().then(() => {
+            if (typeof initializeData === 'function') {
+                initializeData();
+                addNotification('Rafraîchissement', 'L\'application a été rechargée avec succès.');
+            }
+            setTimeout(() => {
+                svg.classList.remove('spin');
+            }, 700);
+        });
     });
     
     // Gestion du thème
