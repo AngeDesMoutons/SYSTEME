@@ -305,8 +305,10 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'malus':
                 taskCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 questCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                bonusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 malusCards.forEach(card => { showWithAnimation(card); });
                 hideWithAnimation(questSection, 'fade-out');
+                hideWithAnimation(bonusSection, 'fade-out');
                 showWithAnimation(malusSection);
                 break;
             case 'bonus':
@@ -322,6 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
             default:
                 taskCards.forEach(card => { showWithAnimation(card); });
                 questCards.forEach(card => { showWithAnimation(card); });
+                bonusCards.forEach(card => { showWithAnimation(card); });
                 malusCards.forEach(card => { showWithAnimation(card); });
                 showWithAnimation(questSection);
                 showWithAnimation(malusSection);
