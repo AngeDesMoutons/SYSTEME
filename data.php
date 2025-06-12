@@ -22,6 +22,7 @@ $defaultData = [
     "level" => 0,
     "tasks" => [],
     "quests" => [],
+    "bonus" => [],
     "malus" => []
 ];
 
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Vérifie que toutes les clés attendues sont présentes
     if (
         is_array($data) &&
-        isset($data['xp'], $data['maxXp'], $data['level'], $data['tasks'], $data['quests'], $data['malus'])
+        isset($data['xp'], $data['maxXp'], $data['level'], $data['tasks'], $data['quests'], $data['malus'], $data['bonus'])
     ) {
         file_put_contents($dataFile, json_encode($data, JSON_PRETTY_PRINT));
         echo '{"success":true}';

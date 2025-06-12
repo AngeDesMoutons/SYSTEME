@@ -121,6 +121,7 @@
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="weekly">Quêtes Hebdomadaires</button>
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="quest">Quêtes Spéciales</button>
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="completed">Quêtes Terminées</button>
+                <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="bonus">Bonus du Système</button>
                 <button class="filter-btn bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm font-medium" data-filter="malus">Malus du Système</button>
             </div>
             
@@ -139,7 +140,18 @@
                     <!-- Les quêtes seront générées dynamiquement ici -->
                 </div>
             </div>
-            
+
+            <!-- ...avant la section Malus... -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-green-700 dark:text-green-400">Bonus du Système</h2>
+                    <button id="addBonusBtn" class="text-sm bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white px-3 py-1 rounded transition">+ Ajouter un Bonus</button>
+                </div>
+                <div id="bonusList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Les bonus seront générés dynamiquement ici -->
+                </div>
+            </div>
+
             <!-- Section Malus -->
             <div class="mt-8">
                 <div class="flex justify-between items-center mb-4">
@@ -211,6 +223,28 @@
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" id="cancelQuestBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">Annuler</button>
                     <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-md transition">Valider</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour ajouter/modifier un bonus -->
+    <div id="bonusModal" class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 hidden modal">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4 slide-in">
+            <h3 id="bonusModalTitle" class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Ajouter un Bonus du Système</h3>
+            <form id="bonusForm" class="space-y-4">
+                <input type="hidden" id="bonusId" value="">
+                <div>
+                    <label for="bonusName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom du Bonus</label>
+                    <input type="text" id="bonusName" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required>
+                </div>
+                <div>
+                    <label for="bonusXp" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">XP Ajouté</label>
+                    <input type="number" id="bonusXp" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white" min="1" value="10" required>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="cancelBonusBtn" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-md transition">Valider</button>
                 </div>
             </form>
         </div>

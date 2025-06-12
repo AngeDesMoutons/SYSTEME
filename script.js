@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let tasks = [];
     let quests = [];
     let malus = [];
+    let bonus = [];
     let currentTheme = 'light';
 
     async function loadAllData() {
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 level = data.level || 0;
                 tasks = data.tasks || [];
                 quests = data.quests || [];
+                bonus = data.bonus || [];
                 malus = data.malus || [];
             }
         } catch (e) {
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
                 'X-Session-Id': sessionId || localStorage.getItem('sessionId') || ''
             },
-            body: JSON.stringify({ xp, maxXp, level, tasks, quests, malus })
+            body: JSON.stringify({ xp, maxXp, level, tasks, quests, bonus, malus })
         });
         if (res.status === 403) {
             alert("Connexion expirée ou utilisée ailleurs. Veuillez vous reconnecter.");
@@ -214,11 +216,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Sélection des sections
         const questSection = document.getElementById('questList').closest('.mt-8');
         const malusSection = document.getElementById('malusList').closest('.mt-8');
+        const bonusSection = document.getElementById('bonusList').closest('.mt-8');
 
         // Cartes
         const taskCards = document.querySelectorAll('#taskList .task-card');
         const questCards = document.querySelectorAll('#questList .quest-card');
         const malusCards = document.querySelectorAll('#malusList .task-card');
+        const bonusCards = document.querySelectorAll('#bonusList .task-card');
 
         const filtersContainer = document.getElementById('filtersContainer');
         filtersContainer.classList.add('scrollbar-fade');
@@ -238,8 +242,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 questCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                bonusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 malusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 hideWithAnimation(questSection, 'fade-out');
+                hideWithAnimation(bonusSection, 'fade-out');
                 hideWithAnimation(malusSection, 'fade-out');
                 break;
             case 'weekly':
@@ -251,15 +257,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 questCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                bonusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 malusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 hideWithAnimation(questSection, 'fade-out');
+                hideWithAnimation(bonusSection, 'fade-out');
                 hideWithAnimation(malusSection, 'fade-out');
                 break;
             case 'quest':
                 taskCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 questCards.forEach(card => { showWithAnimation(card); });
+                bonusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 malusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
                 showWithAnimation(questSection);
+                hideWithAnimation(bonusSection, 'fade-out');
                 hideWithAnimation(malusSection, 'fade-out');
                 break;
             case 'completed':
@@ -270,14 +280,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out');
                     }
                 });
+
+                // Correction pour les quêtes spéciales
+                let hasCompletedQuest = false;
                 questCards.forEach(card => {
                     if (card.classList.contains('completed')) {
                         showWithAnimation(card);
+                        hasCompletedQuest = true;
                     } else {
                         if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out');
                     }
                 });
+                if (hasCompletedQuest) {
+                    showWithAnimation(questSection);
+                } else {
+                    hideWithAnimation(questSection, 'fade-out');
+                }
+
                 malusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                bonusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                hideWithAnimation(bonusSection, 'fade-out');
                 hideWithAnimation(malusSection, 'fade-out');
                 break;
             case 'malus':
@@ -287,6 +309,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideWithAnimation(questSection, 'fade-out');
                 showWithAnimation(malusSection);
                 break;
+            case 'bonus':
+                taskCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                questCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                malusCards.forEach(card => { if (!card.classList.contains('hidden')) hideWithAnimation(card, 'fade-out'); });
+                bonusCards.forEach(card => { showWithAnimation(card); });
+                hideWithAnimation(questSection, 'fade-out');
+                hideWithAnimation(malusSection, 'fade-out');
+                showWithAnimation(bonusSection);
+                break;
             case 'all':
             default:
                 taskCards.forEach(card => { showWithAnimation(card); });
@@ -294,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 malusCards.forEach(card => { showWithAnimation(card); });
                 showWithAnimation(questSection);
                 showWithAnimation(malusSection);
+                showWithAnimation(bonusSection);
                 break;
         }
     }});
@@ -419,6 +451,52 @@ document.addEventListener('DOMContentLoaded', function() {
         hideWithAnimation(questModal, 'fade-out');
     });
     
+    // Modal bonus
+    const bonusModal = document.getElementById('bonusModal');
+    const addBonusBtn = document.getElementById('addBonusBtn');
+    const cancelBonusBtn = document.getElementById('cancelBonusBtn');
+    const bonusForm = document.getElementById('bonusForm');
+
+    addBonusBtn.addEventListener('click', function() {
+        document.getElementById('bonusModalTitle').textContent = 'Ajouter un bonus';
+        document.getElementById('bonusId').value = '';
+        document.getElementById('bonusName').value = '';
+        document.getElementById('bonusXp').value = '10';
+
+        bonusModal.classList.remove('hidden');
+        document.getElementById('bonusName').focus();
+    });
+
+    cancelBonusBtn.addEventListener('click', function() {
+        hideWithAnimation(bonusModal, 'fade-out');
+    });
+
+    bonusForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const id = document.getElementById('bonusId').value || Date.now().toString();
+        const name = document.getElementById('bonusName').value;
+        const xpValue = parseInt(document.getElementById('bonusXp').value);
+
+        const bonusItem = {
+            id,
+            name,
+            xp: xpValue
+        };
+
+        // Ajouter ou mettre à jour le bonus
+        const existingIndex = bonus.findIndex(b => b.id === id);
+        if (existingIndex >= 0) {
+            bonus[existingIndex] = bonusItem;
+        } else {
+            bonus.push(bonusItem);
+        }
+
+        saveAllData();
+        renderBonus();
+        hideWithAnimation(bonusModal, 'fade-out');
+    });
+
     // Gestion du modal de malus
     const malusModal = document.getElementById('malusModal');
     const addMalusBtn = document.getElementById('addMalusBtn');
@@ -525,6 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkMissedTasks();
     renderTasks();
     renderQuests();
+    renderBonus();
     renderMalus();
 
     const percentage = Math.min(100, Math.floor((xp / maxXp) * 100));
@@ -720,6 +799,106 @@ document.addEventListener('DOMContentLoaded', function() {
         addMalusButtonEvents();
     }
     
+    // Fonction pour rendre les bonus avec tri logique
+    function renderBonus() {
+        const bonusList = document.getElementById('bonusList');
+        bonusList.innerHTML = '';
+
+        // Tri par XP décroissant (plus gratifiant en haut)
+        const sortedBonus = [...bonus].sort((a, b) => b.xp - a.xp);
+
+        sortedBonus.forEach(bonusItem => {
+            const bonusCard = document.createElement('div');
+            bonusCard.className = 'task-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border-l-4 border-green-500';
+            bonusCard.setAttribute('data-id', bonusItem.id);
+
+            bonusCard.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-gray-800 dark:text-white">${bonusItem.name}</h3>
+                    <span class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-medium px-2 py-1 rounded">+${bonusItem.xp} XP</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Bonus</span>
+                    <div class="flex space-x-2">
+                        <button class="bonus-btn bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-800/40 text-green-700 dark:text-green-300 px-3 py-1 rounded-md text-sm transition">Appliquer bonus</button>
+                        <button class="edit-bonus-btn p-1 text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </button>
+                        <button class="delete-bonus-btn p-1 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            bonusList.appendChild(bonusCard);
+        });
+
+        addBonusButtonEvents();
+    }
+    
+    function addBonusButtonEvents() {
+        // Appliquer bonus
+        document.querySelectorAll('.bonus-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.task-card');
+                const bonusId = card.getAttribute('data-id');
+                const bonusItem = bonus.find(b => b.id === bonusId);
+
+                addXp(bonusItem.xp);
+
+                this.textContent = 'Bonus appliqué';
+                this.disabled = true;
+                this.classList.remove('bg-green-100', 'hover:bg-green-200', 'dark:bg-green-900/30', 'dark:hover:bg-green-800/40');
+                this.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400');
+
+                setTimeout(() => {
+                    this.textContent = 'Appliquer bonus';
+                    this.disabled = false;
+                    this.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-500', 'dark:text-gray-400');
+                    this.classList.add('bg-green-100', 'hover:bg-green-200', 'dark:bg-green-900/30', 'dark:hover:bg-green-800/40');
+                }, 2000);
+
+                addNotification(`Bonus appliqué: +${bonusItem.xp} XP`, `Vous avez appliqué un bonus: ${bonusItem.name}`);
+            });
+        });
+
+        // Editer bonus
+        document.querySelectorAll('.edit-bonus-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.task-card');
+                const bonusId = card.getAttribute('data-id');
+                const bonusItem = bonus.find(b => b.id === bonusId);
+
+                document.getElementById('bonusModalTitle').textContent = 'Modifier le bonus';
+                document.getElementById('bonusId').value = bonusItem.id;
+                document.getElementById('bonusName').value = bonusItem.name;
+                document.getElementById('bonusXp').value = bonusItem.xp;
+
+                bonusModal.classList.remove('hidden');
+            });
+        });
+
+        // Supprimer bonus
+        document.querySelectorAll('.delete-bonus-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (confirm('Êtes-vous sûr de vouloir supprimer ce bonus ?')) {
+                    const card = this.closest('.task-card');
+                    const bonusId = card.getAttribute('data-id');
+
+                    bonus = bonus.filter(b => b.id !== bonusId);
+                    saveAllData();
+                    hideWithAnimation(card, 'fade-out');
+                    setTimeout(() => card.remove(), 400);
+                }
+            });
+        });
+    }
+
     // Ajouter les événements aux boutons des tâches
     function addTaskButtonEvents() {
         // Boutons de complétion
@@ -940,6 +1119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('click', function(e) {
         if (e.target === taskModal) hideWithAnimation(taskModal, 'fade-out');
         if (e.target === questModal) hideWithAnimation(questModal, 'fade-out');
+        if (e.target === bonusModal) hideWithAnimation(bonusModal, 'fade-out');
         if (e.target === malusModal) hideWithAnimation(malusModal, 'fade-out');
     });
     

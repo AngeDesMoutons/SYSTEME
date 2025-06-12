@@ -126,3 +126,6 @@ body::-webkit-scrollbar {
 #refreshBtn .spin {
     animation: spin 1.3s linear;
 }
+.task-card.border-l-4.border-green-500 {
+    border-left: 4px solid #22c55e !important;
+}
